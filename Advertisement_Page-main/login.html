@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Log In · Stock Insights</title>
+  <link rel="icon" href="Logo_White.png" type="image/png">
+  <link rel="shortcut icon" href="Logo_White.png" type="image/png">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Load config FIRST -->
+  <script>
+    window.ENV = {
+      SUPABASE_URL: "https://mnbmocinletzjsvmaaev.supabase.co",
+      SUPABASE_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1uYm1vY2lubGV0empzdm1hYWV2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3MzYzNzEsImV4cCI6MjA5MTMxMjM3MX0.X_bbX8_ea3x8XkZiYQ7KOqBWBUklhf0-L5GW9Y0R6LA"
+    };
+  </script>
+
+  <style>
+    :root {
+      --primary: #3b82f6;
+      --primary-dark: #1d4ed8;
+      --bg-dark: #020617;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --border: rgba(255,255,255,0.1);
+      --radius-lg: 20px;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; font-family:'Plus Jakarta Sans',sans-serif; }
+    html { scroll-behavior:smooth; }
+    body { background:var(--bg-dark); color:var(--text-main); min-height:100vh;
+           display:flex; flex-direction:column; padding:20px; }
+
+    /* Animated background blob */
+    .blob { position:fixed; width:400px; height:400px; background:radial-gradient(circle,rgba(59,130,246,0.12) 0%,transparent 70%); z-index:-1; filter:blur(80px); top:10%; right:-50px; }
+
+    /* Main container */
+    .main { flex:1; display:flex; align-items:center; justify-content:center; }
+
+    /* Card */
+    .card { background:rgba(15,23,42,0.8); border:1px solid var(--border); border-radius:var(--radius-lg); backdrop-filter:blur(10px); padding:50px 40px; width:100%; max-width:420px; }
+
+    /* Header with logo */
+    .card-header { text-align:center; margin-bottom:36px; }
+    .logo-section { display:flex; align-items:center; justify-content:center; gap:12px; margin-bottom:24px; }
+    .logo-img { height:44px; width:auto; object-fit:contain; filter:drop-shadow(0 2px 6px rgba(59,130,246,0.3)); }
+    .logo-text { font-size:18px; font-weight:800; letter-spacing:1px; color:#fff; }
+
+    .card-header h1 { font-size:28px; font-weight:800; margin-bottom:8px; background:linear-gradient(135deg,#fff,#94a3b8); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+    .card-header p { font-size:14px; color:var(--text-muted); line-height:1.6; }
+
+    /* Form */
+    .form-group { margin-bottom:16px; }
+    .form-group label { display:block; font-size:12px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:8px; }
+    
+    input { width:100%; padding:14px 16px; background:rgba(2,6,23,0.6); border:1px solid rgba(255,255,255,0.15); border-radius:12px; color:var(--text-main); font-size:15px; font-family:inherit; transition:all 0.3s; }
+    input::placeholder { color:var(--text-muted); }
+    input:focus { border-color:var(--primary); outline:none; background:rgba(59,130,246,0.05); box-shadow:0 0 0 3px rgba(59,130,246,0.1); }
+
+    /* Buttons */
+    .btn { width:100%; padding:14px 16px; background:var(--primary); color:#fff; border:none; border-radius:12px; font-size:15px; font-weight:700; cursor:pointer; font-family:inherit; transition:all 0.3s; margin-top:8px; }
+    .btn:hover { background:var(--primary-dark); transform:translateY(-2px); box-shadow:0 8px 24px rgba(59,130,246,0.3); }
+    .btn:active { transform:translateY(0); }
+    .btn:disabled { opacity:0.6; cursor:not-allowed; transform:none; }
+
+    /* Messages */
+    .msg { border-radius:12px; padding:14px 16px; font-size:13px; font-weight:600; margin-top:16px; display:none; line-height:1.5; }
+    .msg.show { display:block; }
+    .msg.error { background:rgba(248,113,113,0.1); border:1px solid rgba(248,113,113,0.3); color:#f87171; }
+    .msg.success { background:rgba(16,185,129,0.1); border:1px solid rgba(16,185,129,0.3); color:#10b981; }
+    .msg.warn { background:rgba(245,158,11,0.1); border:1px solid rgba(245,158,11,0.3); color:#f59e0b; }
+
+    /* Links section */
+    .links-section { margin-top:28px; padding-top:24px; border-top:1px solid var(--border); text-align:center; }
+    .links-section p { font-size:13px; color:var(--text-muted); margin-bottom:12px; }
+    .link { color:var(--primary); text-decoration:none; font-weight:600; transition:0.3s; cursor:pointer; }
+    .link:hover { color:#93c5fd; }
+
+    /* Footer */
+    .footer { padding:24px 20px; text-align:center; color:var(--text-muted); font-size:12px; border-top:1px solid var(--border); margin-top:40px; }
+    .footer-links { display:flex; justify-content:center; gap:16px; flex-wrap:wrap; margin-bottom:12px; }
+    .footer-links a { color:var(--text-muted); text-decoration:none; transition:0.3s; }
+    .footer-links a:hover { color:var(--primary); }
+
+    /* Trust indicators */
+    .trust-icons { display:flex; justify-content:center; gap:20px; margin-top:28px; padding-top:24px; border-top:1px solid var(--border); flex-wrap:wrap; }
+    .trust-icon { display:flex; flex-direction:column; align-items:center; gap:6px; font-size:12px; color:var(--text-muted); }
+    .trust-icon span { font-size:20px; }
+
+    @media (max-width:600px) {
+      .card { padding:32px 24px; }
+      .card-header { margin-bottom:28px; }
+      .card-header h1 { font-size:24px; }
+      .trust-icons { gap:12px; margin-top:20px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="blob"></div>
+
+<div class="main">
+  <div class="card">
+    <!-- Header -->
+    <div class="card-header">
+      <div class="logo-section">
+        <img src="Logo_White.png" alt="Stock Insights Logo" class="logo-img">
+        <span class="logo-text">STOCK INSIGHTS</span>
+      </div>
+      <h1>Welcome Back 👋</h1>
+      <p>Log in to your dashboard and manage your stock portfolio.</p>
+    </div>
+
+    <!-- Form -->
+    <div class="form-group">
+      <label>Email Address</label>
+      <input type="email" id="email" placeholder="your@email.com" autocomplete="email">
+    </div>
+
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" id="password" placeholder="Your password" autocomplete="current-password">
+    </div>
+
+    <button class="btn" id="loginBtn">Log In →</button>
+
+    <div class="msg" id="msg"></div>
+
+    <!-- Links -->
+    <div class="links-section">
+      <p>Don't have an account? <a href="index.html#contact" class="link">Sign up free →</a></p>
+      <p style="font-size:12px; color:#888;"><a class="link" id="forgotPasswordLink">Forgot password?</a></p>
+    </div>
+
+    <!-- Trust indicators -->
+    <div class="trust-icons">
+      <div class="trust-icon">
+        <span>🔒</span>
+        <span>Secure</span>
+      </div>
+      <div class="trust-icon">
+        <span>⚡</span>
+        <span>Fast</span>
+      </div>
+      <div class="trust-icon">
+        <span>🆓</span>
+        <span>Free</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Footer -->
+<div class="footer">
+  <div class="footer-links">
+    <a href="index.html">Home</a>
+    <a href="index.html#features">Features</a>
+    <a href="index.html#about">How It Works</a>
+    <a href="https://www.linkedin.com/company/stock-insight-ai-agent/" target="_blank">LinkedIn</a>
+  </div>
+  <p>© 2026 Stock Insights. All rights reserved. Built in Pune, India.</p>
+  <p style="margin-top:8px; opacity:0.6;">Not financial advice. Trading involves risk.</p>
+</div>
+
+<!-- Supabase JS Library -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+// Initialize Supabase with config
+const SUPA_URL = window.ENV.SUPABASE_URL;
+const SUPA_KEY = window.ENV.SUPABASE_KEY;
+const sb = supabase.createClient(SUPA_URL, SUPA_KEY);
+
+console.log("✅ Supabase initialized:", SUPA_URL);
+
+// Check if already logged in
+window.addEventListener("load", async () => {
+  try {
+    const { data: { session } } = await sb.auth.getSession();
+    if (session) {
+      console.log("✅ User already logged in, redirecting to dashboard");
+      window.location.href = "dashboard.html";
+    }
+  } catch (error) {
+    console.error("❌ Session check error:", error);
+  }
+});
+
+// Login button click
+document.getElementById("loginBtn").addEventListener("click", async () => {
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
+  const msg = document.getElementById("msg");
+  const btn = document.getElementById("loginBtn");
+
+  // Validation
+  if (!email || !password) {
+    msg.className = "msg show error";
+    msg.textContent = "❌ Please fill in both fields";
+    return;
+  }
+
+  if (!email.includes("@")) {
+    msg.className = "msg show error";
+    msg.textContent = "❌ Please enter a valid email";
+    return;
+  }
+
+  // Disable button and show loading
+  btn.textContent = "Logging in…";
+  btn.disabled = true;
+
+  try {
+    console.log("🔐 Attempting login for:", email);
+    
+    const { data, error } = await sb.auth.signInWithPassword({ 
+      email, 
+      password 
+    });
+
+    // Re-enable button
+    btn.textContent = "Log In →";
+    btn.disabled = false;
+
+    if (error) {
+      console.error("❌ Login error:", error.message);
+      msg.className = "msg show error";
+      msg.textContent = "❌ " + error.message;
+      return;
+    }
+
+    if (data?.session) {
+      console.log("✅ Login successful for:", email);
+      msg.className = "msg show success";
+      msg.textContent = "✅ Login successful! Redirecting...";
+      
+      setTimeout(() => {
+        window.location.href = "dashboard.html";
+      }, 1200);
+    }
+  } catch (error) {
+    console.error("❌ Unexpected error:", error);
+    btn.textContent = "Log In →";
+    btn.disabled = false;
+    msg.className = "msg show error";
+    msg.textContent = "❌ An unexpected error occurred. Please try again.";
+  }
+});
+
+// Enter key to login
+document.getElementById("password").addEventListener("keypress", (e) => {
+  if (e.key === "Enter") {
+    document.getElementById("loginBtn").click();
+  }
+});
+
+// Forgot password
+document.getElementById("forgotPasswordLink").addEventListener("click", async (e) => {
+  e.preventDefault();
+
+  const email = document.getElementById("email").value.trim();
+  const msg = document.getElementById("msg");
+
+  if (!email) {
+    msg.className = "msg show error";
+    msg.textContent = "❌ Enter your email first to reset password";
+    return;
+  }
+
+  msg.className = "msg show warn";
+  msg.textContent = "⏳ Sending reset link...";
+
+  try {
+    const { error } = await sb.auth.resetPasswordForEmail(email, {
+      redirectTo: window.location.origin + "/reset-password.html"
+    });
+
+    if (error) {
+      msg.className = "msg show error";
+      msg.textContent = "❌ " + error.message;
+    } else {
+      msg.className = "msg show success";
+      msg.textContent = "✅ Reset link sent! Check your email.";
+    }
+  } catch (error) {
+    msg.className = "msg show error";
+    msg.textContent = "❌ Error sending reset link.";
+  }
+});
+</script>
+
+</body>
+</html>

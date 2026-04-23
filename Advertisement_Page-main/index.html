@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" type="image/png" href="Logo_White.png">
+    <link rel="apple-touch-icon" href="Logo_White.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Insights | Weekly Stock Digest</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --primary-light: #60a5fa;
+            --primary-dark: #1d4ed8;
+            --success: #10b981;
+            --bg-dark: #020617;
+            --glass: rgba(255,255,255,0.03);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: rgba(255,255,255,0.1);
+            --radius-xl: 32px;
+            --radius-lg: 20px;
+        }
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Plus Jakarta Sans',sans-serif; }
+        html { scroll-behavior:smooth; }
+        body { background:var(--bg-dark); color:var(--text-main); line-height:1.6; overflow-x:hidden; }
+
+        header { position:fixed; top:0; width:100%; height:80px; background:rgba(2,6,23,0.95); backdrop-filter:blur(15px); border-bottom:1px solid var(--border); z-index:1000; }
+        .nav-container { max-width:1200px; margin:auto; height:100%; display:flex; justify-content:space-between; align-items:center; padding:0 20px; }
+        .logo { display:flex; align-items:center; gap:12px; text-decoration:none; }
+        .logo-img { height:40px; width:auto; object-fit:contain; filter:drop-shadow(0 2px 6px rgba(59,130,246,0.3)); }
+        .logo-text { font-size:18px; font-weight:800; letter-spacing:1px; color:#fff; line-height:1; }
+        nav { display:flex; gap:0; }
+        nav a { color:var(--text-muted); text-decoration:none; font-size:13px; margin:0 24px; font-weight:600; transition:0.3s; }
+        nav a:hover { color:var(--primary-light); }
+        nav a.login-link { color:var(--primary); background:rgba(59,130,246,0.1); padding:8px 16px; border-radius:8px; }
+
+        .blob { position:absolute; width:500px; height:500px; background:radial-gradient(circle,rgba(59,130,246,0.15) 0%,transparent 70%); z-index:-1; filter:blur(60px); top:-100px; right:-100px; }
+
+        /* HERO */
+        .hero { padding:220px 20px 100px; text-align:center; max-width:1000px; margin:auto; position:relative; }
+        .badge { background:rgba(16,185,129,0.1); color:#34d399; padding:10px 24px; border-radius:100px; font-size:12px; font-weight:700; display:inline-block; margin-bottom:24px; border:1px solid rgba(16,185,129,0.3); }
+        h1 { font-size:clamp(38px,6vw,68px); font-weight:800; letter-spacing:-2px; line-height:1.05; margin-bottom:28px; background:linear-gradient(135deg,#fff,#94a3b8); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+        .hero p { font-size:18px; color:var(--text-muted); margin-bottom:40px; max-width:680px; margin-inline:auto; line-height:1.7; }
+        .hero-social-proof { display:flex; align-items:center; justify-content:center; gap:20px; margin-bottom:48px; flex-wrap:wrap; }
+        .avatars { display:flex; }
+        .avatar { width:36px; height:36px; border-radius:50%; border:2px solid var(--bg-dark); margin-left:-10px; object-fit:cover; }
+        .avatars .avatar:first-child { margin-left:0; }
+        .social-text { font-size:14px; color:var(--text-muted); }
+        .social-text strong { color:#fff; }
+
+        /* BUTTONS */
+        .btn { padding:16px 40px; background:var(--primary); color:#fff; border:none; border-radius:12px; font-weight:700; text-decoration:none; display:inline-block; transition:0.3s; cursor:pointer; text-align:center; font-size:15px; }
+        .btn:hover { background:var(--primary-dark); transform:translateY(-2px); box-shadow:0 8px 24px rgba(59,130,246,0.3); }
+        .btn:disabled { opacity:0.6; cursor:not-allowed; transform:none; }
+        .btn-secondary { background:transparent; border:1px solid var(--border); color:var(--text-main); }
+        .btn-secondary:hover { background:rgba(59,130,246,0.1); border-color:var(--primary); }
+
+        /* EMAIL MOCKUP */
+        .email-mockup-wrap { width:100%; max-width:760px; margin:80px auto 0; border-radius:var(--radius-xl); border:1px solid var(--border); box-shadow:0 25px 60px -12px rgba(0,0,0,0.7); overflow:hidden; background:#0f172a; }
+        .email-chrome { background:#1e293b; padding:14px 20px; display:flex; align-items:center; gap:10px; border-bottom:1px solid var(--border); }
+        .chrome-dot { width:12px; height:12px; border-radius:50%; }
+        .chrome-bar { flex:1; background:#0f172a; border-radius:6px; height:26px; display:flex; align-items:center; padding:0 14px; }
+        .chrome-url { font-size:12px; color:var(--text-muted); }
+        .email-body { padding:28px 30px; text-align:left; }
+        .email-header-row { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:20px; padding-bottom:16px; border-bottom:1px solid var(--border); flex-wrap:wrap; gap:10px; }
+        .email-from { font-size:13px; color:var(--text-muted); }
+        .email-from strong { color:#fff; display:block; font-size:15px; margin-bottom:2px; }
+        .email-date { font-size:12px; color:var(--text-muted); }
+        .email-subject { font-size:20px; font-weight:800; color:#fff; margin-bottom:6px; }
+        .email-preview { font-size:13px; color:var(--text-muted); margin-bottom:24px; }
+        .stock-cards-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:14px; margin-bottom:20px; }
+        .stock-card { background:#020617; border:1px solid var(--border); border-radius:14px; padding:16px; }
+        .stock-ticker { font-size:11px; font-weight:700; color:var(--primary-light); letter-spacing:1px; text-transform:uppercase; margin-bottom:4px; }
+        .stock-price { font-size:22px; font-weight:800; color:#fff; margin-bottom:4px; }
+        .stock-change-pos { font-size:13px; color:#34d399; font-weight:600; }
+        .stock-change-neg { font-size:13px; color:#f87171; font-weight:600; }
+        .stock-range { font-size:11px; color:var(--text-muted); margin-top:6px; }
+        .ai-insight-block { background:rgba(59,130,246,0.06); border:1px solid rgba(59,130,246,0.2); border-radius:12px; padding:16px 18px; margin-bottom:14px; }
+        .ai-insight-label { font-size:11px; font-weight:700; color:var(--primary-light); letter-spacing:1px; text-transform:uppercase; margin-bottom:8px; }
+        .ai-insight-text { font-size:13px; color:#cbd5e1; line-height:1.6; }
+        .email-footer-note { font-size:11px; color:var(--text-muted); text-align:center; padding-top:16px; border-top:1px solid var(--border); }
+
+        /* SECTIONS */
+        .section { padding:100px 20px; max-width:1200px; margin:auto; }
+        .section-title { text-align:center; margin-bottom:60px; }
+        .section-title h2 { font-size:40px; font-weight:800; margin-bottom:15px; }
+        .section-title p { color:var(--text-muted); font-size:18px; }
+
+        .about-grid { display:grid; grid-template-columns:1fr 1fr; gap:60px; align-items:center; margin-bottom:80px; }
+        .about-content h3 { font-size:28px; margin-bottom:20px; color:var(--primary-light); }
+        .about-content p { font-size:17px; color:var(--text-muted); margin-bottom:25px; line-height:1.8; }
+        .stat-grid { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+        .stat-item { background:var(--glass); padding:24px; border-radius:var(--radius-lg); border:1px solid var(--border); }
+        .stat-item h4 { font-size:28px; color:#fff; font-weight:800; }
+        .stat-item span { font-size:12px; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; }
+
+        .about-extra { margin-top:60px; padding:50px; background:rgba(59,130,246,0.05); border-radius:var(--radius-xl); border:1px solid var(--border); }
+        .advantage-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:30px; margin-top:30px; }
+        .adv-card { padding:24px; }
+        .adv-card h4 { color:var(--primary-light); margin-bottom:12px; font-size:18px; font-weight:700; }
+        .adv-card p { font-size:14px; color:var(--text-muted); line-height:1.7; }
+
+        .feature-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); gap:25px; }
+        .f-card { background:var(--glass); border:1px solid var(--border); padding:40px; border-radius:var(--radius-xl); transition:0.4s cubic-bezier(0.175,0.885,0.32,1.275); }
+        .f-card:hover { border-color:var(--primary); transform:translateY(-10px); background:rgba(59,130,246,0.05); }
+        .f-icon { font-size:40px; margin-bottom:20px; display:block; }
+        .f-card h3 { font-size:22px; margin-bottom:15px; font-weight:700; }
+
+        .steps { display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:40px; text-align:center; margin-top:60px; }
+        .step-num { width:48px; height:48px; background:var(--primary); color:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 20px; font-weight:800; font-size:20px; }
+
+        /* SUBSCRIBE */
+        .digest-section { padding:100px 20px; }
+        .digest-inner { max-width:1100px; margin:0 auto; display:grid; grid-template-columns:1fr 1fr; gap:60px; align-items:start; }
+        .digest-left h2 { font-size:38px; font-weight:800; line-height:1.1; margin-bottom:16px; }
+        .digest-left > p { font-size:17px; color:var(--text-muted); margin-bottom:30px; line-height:1.7; }
+        .how-steps { display:flex; flex-direction:column; gap:16px; margin-bottom:36px; }
+        .how-step { display:flex; align-items:flex-start; gap:14px; }
+        .how-step-num { width:32px; height:32px; background:rgba(59,130,246,0.15); color:var(--primary-light); border:2px solid rgba(59,130,246,0.3); border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:13px; flex-shrink:0; margin-top:0px; }
+        .how-step-text strong { color:#fff; display:block; font-size:15px; margin-bottom:4px; }
+        .how-step-text span { font-size:13px; color:var(--text-muted); }
+
+        .sub-count { display:flex; align-items:center; gap:10px; margin-bottom:24px; }
+        .sub-count-avatars { display:flex; }
+        .sub-count-avatar { width:32px; height:32px; border-radius:50%; border:2px solid var(--bg-dark); margin-left:-8px; overflow:hidden; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:700; color:#fff; }
+        .sub-count-avatar:first-child { margin-left:0; }
+        .sub-count-text { font-size:13px; color:var(--text-muted); }
+        .sub-count-text strong { color:#fff; }
+
+        /* FORM CARD */
+        .digest-form-container { background:#0f172a; border-radius:var(--radius-xl); border:1px solid var(--border); padding:40px; text-align:center; }
+        .digest-form-container h3 { font-size:24px; font-weight:800; margin-bottom:6px; }
+        .form-sub { font-size:14px; color:var(--text-muted); margin-bottom:28px; }
+
+        .step-indicator { display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:28px; }
+        .step-dot { width:8px; height:8px; border-radius:50%; background:#334155; transition:all 0.3s; }
+        .step-dot.active { width:28px; border-radius:4px; background:var(--primary); }
+        .step-dot.done { background:var(--success); }
+
+        .form-step { display:none; flex-direction:column; gap:14px; text-align:left; }
+        .form-step.active { display:flex; animation:fadeIn 0.35s ease forwards; }
+        @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+
+        .form-step input,
+        .form-step select { width:100%; padding:14px 16px; background:#020617; border:1px solid #334155; border-radius:12px; color:#fff; font-size:15px; font-family:'Plus Jakarta Sans',sans-serif; transition:border-color 0.2s; }
+        .form-step input:focus,
+        .form-step select:focus { border-color:var(--primary); outline:none; background:#020617; }
+        .form-step select option { background:#0f172a; }
+        .input-hint { font-size:12px; color:var(--text-muted); margin-top:-4px; padding:0 2px; }
+        .pro-teaser { font-size:12px; color:#34d399; margin-top:-4px; padding:0 2px; }
+        .checkbox-row { display:flex; align-items:center; gap:12px; color:#cbd5e1; font-size:14px; cursor:pointer; }
+        .checkbox-row input[type="checkbox"] { width:18px!important; height:18px!important; accent-color:var(--primary); }
+
+        .msg-box { border-radius:12px; padding:14px 16px; font-size:14px; font-weight:600; line-height:1.5; text-align:center; display:none; }
+        .msg-box.show { display:block; }
+        .msg-box.success { background:rgba(16,185,129,0.1); border:1px solid rgba(16,185,129,0.4); color:#34d399; }
+        .msg-box.error   { background:rgba(248,113,113,0.1); border:1px solid rgba(248,113,113,0.3); color:#f87171; }
+        .msg-box.warn    { background:rgba(245,158,11,0.1);  border:1px solid rgba(245,158,11,0.3);  color:#f59e0b; }
+        .msg-box .sub    { font-size:12px; color:#94a3b8; font-weight:400; display:block; margin-top:4px; }
+
+        .trust-bar { display:flex; justify-content:center; align-items:center; gap:30px; flex-wrap:wrap; padding:40px 20px; background:rgba(59,130,246,0.03); border-top:1px solid var(--border); border-bottom:1px solid var(--border); }
+        .trust-item { display:flex; align-items:center; gap:8px; font-size:13px; color:var(--text-muted); }
+        .trust-item span { font-size:16px; }
+
+        .linkedin-btn { display:inline-flex; align-items:center; gap:8px; background:rgba(10,102,194,0.15); color:#60a5fa; border:1px solid rgba(10,102,194,0.3); border-radius:8px; padding:10px 18px; font-size:13px; font-weight:600; text-decoration:none; transition:0.3s; }
+        .linkedin-btn:hover { background:rgba(10,102,194,0.25); color:#93c5fd; }
+
+        footer { text-align:center; padding:60px 20px; border-top:1px solid var(--border); color:var(--text-muted); font-size:14px; }
+        .footer-links { display:flex; justify-content:center; align-items:center; gap:20px; margin-bottom:20px; flex-wrap:wrap; }
+        .footer-links a { color:var(--text-muted); text-decoration:none; font-size:13px; transition:0.3s; }
+        .footer-links a:hover { color:var(--primary-light); }
+
+        @media (max-width:900px) {
+            .about-grid,.digest-inner { grid-template-columns:1fr; }
+            .hero { padding-top:180px; }
+            .stock-cards-row { grid-template-columns:1fr 1fr; }
+        }
+        @media (max-width:600px) {
+            .nav-container { flex-direction:column; height:auto; padding:10px; }
+            nav { margin-top:8px; gap:8px; }
+            nav a { margin:0 6px; }
+            .email-body { padding:18px; }
+            .stock-cards-row { grid-template-columns:1fr; }
+            .digest-form-container { padding:24px; }
+            .trust-bar { gap:16px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="blob"></div>
+
+<!-- HEADER -->
+<header>
+    <div class="nav-container">
+        <a href="#" class="logo">
+            <img src="Logo_White.png" alt="Stock Insights Logo" class="logo-img">
+            <span class="logo-text">STOCK INSIGHTS</span>
+        </a>
+        <nav>
+            <a href="#features">Features</a>
+            <a href="#about">How It Works</a>
+            <a href="login.html" class="login-link">Log In</a>
+            <a href="#contact" class="btn" style="margin:0;">Get Started Free</a>
+        </nav>
+    </div>
+</header>
+
+<!-- TICKER -->
+<div class="market-ticker-container">
+    <div class="tradingview-widget-container">
+        <div class="tradingview-widget-container__widget"></div>
+        <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
+        {"symbols":[{"proName":"FOREXCOM:SPX3500","title":"S&P 500"},{"proName":"NASDAQ:IXIC","title":"NASDAQ"},{"proName":"NSE:NIFTY","title":"NIFTY 50"},{"proName":"XETR:DAX","title":"DAX (GERMANY)"},{"description":"APPLE","proName":"NASDAQ:AAPL"},{"description":"RELIANCE","proName":"NSE:RELIANCE"},{"description":"BITCOIN","proName":"BINANCE:BTCUSDT"}],"showSymbolLogo":true,"colorTheme":"dark","isTransparent":true,"displayMode":"adaptive","locale":"en"}
+        </script>
+    </div>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+    <span class="badge">✦ EARLY ACCESS · FREE (LIMITED SPOTS)</span>
+    <h1>Your Smart Stock Weekly Digest.<br>In Under 2 Minutes.</h1>
+    <p>Stop scrolling through news. Every Sunday morning, get AI-powered insights on your stocks—price changes, key news, and what to watch next week. Clean, simple, actionable.</p>
+
+    <div class="hero-social-proof">
+        <div class="avatars">
+            <img class="avatar" src="https://i.pravatar.cc/36?img=11" alt="">
+            <img class="avatar" src="https://i.pravatar.cc/36?img=22" alt="">
+            <img class="avatar" src="https://i.pravatar.cc/36?img=33" alt="">
+            <img class="avatar" src="https://i.pravatar.cc/36?img=44" alt="">
+        </div>
+        <p class="social-text"><strong>Early users</strong> already receiving their digests</p>
+    </div>
+
+    <div style="display:flex;gap:15px;justify-content:center;flex-wrap:wrap;margin-bottom:20px;">
+        <a href="#contact" class="btn" style="width:auto;padding:16px 45px;">Start Free Today →</a>
+        <a href="#features" class="btn btn-secondary" style="width:auto;padding:16px 45px;">See What's Inside</a>
+    </div>
+
+    <div class="email-mockup-wrap">
+        <div class="email-chrome">
+            <div class="chrome-dot" style="background:#ef4444;"></div>
+            <div class="chrome-dot" style="background:#f59e0b;"></div>
+            <div class="chrome-dot" style="background:#22c55e;"></div>
+            <div class="chrome-bar"><span class="chrome-url">📧 Weekly Digest · Stock Insights</span></div>
+        </div>
+        <div class="email-body">
+            <div class="email-header-row">
+                <div class="email-from">
+                    <strong>Stock Insights Weekly 📈</strong>
+                    stockinsights214@gmail.com
+                </div>
+                <div class="email-date">Sun · 8:05 AM</div>
+            </div>
+            <div class="email-subject">Your Weekly Stock Digest — Sunday</div>
+            <div class="email-preview">Here's everything that happened with your stocks this week + what to watch next.</div>
+            <div class="stock-cards-row">
+                <div class="stock-card">
+                    <div class="stock-ticker">RELIANCE.NS</div>
+                    <div class="stock-price">₹2,847</div>
+                    <div class="stock-change-pos">▲ +2.4% this week</div>
+                    <div class="stock-range">52W: ₹2,220 – ₹3,021</div>
+                </div>
+                <div class="stock-card">
+                    <div class="stock-ticker">AAPL</div>
+                    <div class="stock-price">$198.52</div>
+                    <div class="stock-change-neg">▼ −1.1% this week</div>
+                    <div class="stock-range">52W: $164 – $237</div>
+                </div>
+                <div class="stock-card">
+                    <div class="stock-ticker">TSLA</div>
+                    <div class="stock-price">$247.10</div>
+                    <div class="stock-change-pos">▲ +5.2% this week</div>
+                    <div class="stock-range">52W: $138 – $479</div>
+                </div>
+            </div>
+            <div class="ai-insight-block">
+                <div class="ai-insight-label">🧠 AI ANALYSIS · RELIANCE.NS</div>
+                <div class="ai-insight-text">Reliance posted strong Q4 results driven by Jio's subscriber growth. Retail segment revenue grew 11% YoY. The stock is trading near its 52W high — watch for a breakout above ₹3,000. Key risk: global oil price softness could pressure refining margins next quarter.</div>
+            </div>
+            <div class="ai-insight-block">
+                <div class="ai-insight-label">📋 WHAT TO WATCH NEXT WEEK</div>
+                <div class="ai-insight-text">Apple earnings on Tue Apr 29 — analysts expect iPhone growth guidance to be cautious. Tesla's Cybertruck ramp update expected. Indian markets closed Monday for holiday.</div>
+            </div>
+            <div class="email-footer-note">Stock Insights · Pune, India · Unsubscribe any time · Not financial advice</div>
+        </div>
+    </div>
+</section>
+
+<!-- TRUST BAR -->
+<div class="trust-bar" style="max-width:1200px;margin:0 auto;">
+    <div class="trust-item"><span>🔒</span> No spam, encrypted data</div>
+    <div class="trust-item"><span>📧</span> One email per week only</div>
+    <div class="trust-item"><span>⚡</span> Powered by Groq AI + yfinance</div>
+    <div class="trust-item"><span>🇮🇳</span> Built in Pune, India</div>
+    <div class="trust-item"><span>🆓</span> Free forever (during beta)</div>
+</div>
+
+<!-- ABOUT / HOW IT WORKS -->
+<section id="about" class="section">
+    <div class="section-title">
+        <h2>How Stock Insights Works</h2>
+        <p>Three simple steps to smarter investing.</p>
+    </div>
+
+    <div class="steps">
+        <div>
+            <div class="step-num">1</div>
+            <h4>Add Your Stocks</h4>
+            <p style="color:var(--text-muted);font-size:14px;line-height:1.7;">Add up to 3 stocks you want to track—NSE, NYSE, or NASDAQ.</p>
+        </div>
+        <div>
+            <div class="step-num">2</div>
+            <h4>Verify Your Email</h4>
+            <p style="color:var(--text-muted);font-size:14px;line-height:1.7;">One-click verification. No password needed. Secure and fast.</p>
+        </div>
+        <div>
+            <div class="step-num">3</div>
+            <h4>Get Digests Every Sunday</h4>
+            <p style="color:var(--text-muted);font-size:14px;line-height:1.7;">Every Sunday at 8 AM, your personalized digest lands in your inbox.</p>
+        </div>
+    </div>
+
+    <div style="margin-top:80px;">
+        <div class="about-grid">
+            <div>
+                <img src="https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?q=80&w=600&auto=format&fit=crop" style="width:100%;border-radius:var(--radius-xl);border:1px solid var(--border);" alt="Weekly Stock Digest">
+            </div>
+            <div class="about-content">
+                <h3>Why Stock Insights?</h3>
+                <p>Most investors spend hours every week on research. We built Stock Insights to change that. Our AI reads all the news, earnings reports, and market data—then delivers the essentials in one beautiful email.</p>
+                <p><strong>No dashboards.</strong> No information overload. Just what matters.</p>
+                <div class="stat-grid" style="margin-top:30px;">
+                    <div class="stat-item">
+                        <h4>47+</h4>
+                        <span>Early Users</span>
+                    </div>
+                    <div class="stat-item">
+                        <h4>99%</h4>
+                        <span>Open Rate</span>
+                    </div>
+                </div>
+                <p style="margin-top:30px;font-size:16px;color:var(--text-muted);">Made with ❤️ by retail investors, for retail investors.</p>
+            </div>
+        </div>
+    </div>
+
+    <section class="about-extra">
+        <div style="text-align:center;margin-bottom:40px;">
+            <h3 style="font-size:28px;color:#fff;margin-bottom:12px;">What You'll Get Every Sunday</h3>
+            <p style="color:var(--text-muted);max-width:600px;margin:0 auto;">One clean email. Everything that matters for your portfolio.</p>
+        </div>
+        <div class="advantage-grid">
+            <div class="adv-card">
+                <h4>📊 Your Stocks at a Glance</h4>
+                <p>Price movement, 52-week range, volume analysis—all in beautiful, easy-to-read cards.</p>
+            </div>
+            <div class="adv-card">
+                <h4>🧠 AI-Powered Analysis</h4>
+                <p>Our AI reads the week's news and explains what it means for your stocks in plain English.</p>
+            </div>
+            <div class="adv-card">
+                <h4>📋 What to Watch Next Week</h4>
+                <p>Upcoming earnings, macro events, key price levels—stay prepared for the week ahead.</p>
+            </div>
+        </div>
+        <div style="text-align:center;margin-top:40px;padding:24px;background:rgba(16,185,129,0.08);border-radius:var(--radius-lg);border:1px solid rgba(16,185,129,0.3);">
+            <p style="color:#34d399;font-weight:700;margin-bottom:8px;">✅ Private Beta: Limited Free Spots Available</p>
+            <p style="color:var(--text-muted);">Join 47+ early users. Lock in free forever access before we reach capacity.</p>
+        </div>
+    </section>
+</section>
+
+<!-- FEATURES -->
+<section id="features" class="section">
+    <div class="section-title">
+        <h2>Packed with Everything You Need</h2>
+        <p>Smart features designed for busy investors.</p>
+    </div>
+    <div class="feature-grid">
+        <div class="f-card">
+            <span class="f-icon">📈</span>
+            <h3>Weekly Stock Summary</h3>
+            <p style="color:var(--text-muted);font-size:15px;line-height:1.7;">Clean cards showing price changes, 52-week ranges, volume spikes, and key technical levels. No clutter, just data.</p>
+        </div>
+        <div class="f-card" style="border:2px solid var(--primary);">
+            <span class="f-icon">🧠</span>
+            <h3>AI Analysis</h3>
+            <p style="color:var(--text-muted);font-size:15px;line-height:1.7;">Powered by Groq AI. Reads all the week's news, explains what it means, identifies opportunities and risks.</p>
+            <div style="margin-top:16px;display:inline-block;background:rgba(59,130,246,0.1);color:var(--primary-light);font-size:11px;font-weight:700;padding:6px 14px;border-radius:100px;border:1px solid rgba(59,130,246,0.2);">⭐ Most Popular</div>
+        </div>
+        <div class="f-card">
+            <span class="f-icon">📋</span>
+            <h3>Next Week's Watchlist</h3>
+            <p style="color:var(--text-muted);font-size:15px;line-height:1.7;">Upcoming earnings, macro events, price levels to watch. Start every Monday already prepared.</p>
+        </div>
+    </div>
+    <div style="margin-top:50px;padding:30px 40px;background:rgba(59,130,246,0.05);border:1px solid var(--border);border-radius:var(--radius-xl);text-align:center;">
+        <p style="font-size:16px;color:var(--text-muted);">🚀 <strong style="color:#fff;">Coming in 2026:</strong> Portfolio tracking, unlimited stocks, sector heatmaps, Discord alerts.</p>
+    </div>
+</section>
+
+<!-- SUBSCRIBE -->
+<section class="digest-section" id="contact">
+    <div class="digest-inner">
+
+        <!-- LEFT -->
+        <div class="digest-left">
+            <h2>Get Started Today.</h2>
+            <p>Join our early users receiving smart stock digests every Sunday. Free during beta.</p>
+            <div class="how-steps">
+                <div class="how-step">
+                    <div class="how-step-num">1</div>
+                    <div class="how-step-text"><strong>Create Your Account</strong><span>One-click registration with email</span></div>
+                </div>
+                <div class="how-step">
+                    <div class="how-step-num">2</div>
+                    <div class="how-step-text"><strong>Choose Your Stocks</strong><span>Add up to 3 stocks to track</span></div>
+                </div>
+                <div class="how-step">
+                    <div class="how-step-num">3</div>
+                    <div class="how-step-text"><strong>Get Your Digest</strong><span>Every Sunday at 8 AM in your inbox</span></div>
+                </div>
+            </div>
+            <div class="sub-count">
+                <div class="sub-count-avatars">
+                    <div class="sub-count-avatar"><img src="https://i.pravatar.cc/32?img=15" alt="" style="width:100%;height:100%;object-fit:cover;"></div>
+                    <div class="sub-count-avatar"><img src="https://i.pravatar.cc/32?img=26" alt="" style="width:100%;height:100%;object-fit:cover;"></div>
+                    <div class="sub-count-avatar"><img src="https://i.pravatar.cc/32?img=37" alt="" style="width:100%;height:100%;object-fit:cover;"></div>
+                    <div class="sub-count-avatar" style="background:#1e293b;font-size:8px;color:var(--text-muted);">+44</div>
+                </div>
+                <p class="sub-count-text"><strong>Early users</strong> joined this month</p>
+            </div>
+            <p style="font-size:13px;color:var(--text-muted);display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:20px;">
+                <span style="color:#34d399;">✓</span> No spam &nbsp;
+                <span style="color:#34d399;">✓</span> One click unsubscribe &nbsp;
+                <span style="color:#34d399;">✓</span> Free forever
+            </p>
+        </div>
+
+        <!-- RIGHT: Form -->
+        <div class="digest-form-container">
+            <h3>Get Your Free Digest</h3>
+            <p class="form-sub">Smart stocks. Every Sunday. Free.</p>
+
+            <div class="step-indicator">
+                <div class="step-dot active" id="dot1"></div>
+                <div class="step-dot" id="dot2"></div>
+                <div class="step-dot" id="dot3"></div>
+            </div>
+
+            <!-- STEP 1: Email + Password -->
+            <div class="form-step active" id="step1">
+                <input type="email" id="emailInput" placeholder="your@email.com" autocomplete="email">
+                <input type="password" id="passwordInput" placeholder="Create a password (min 6 chars)" autocomplete="new-password">
+                <button class="btn" id="signupBtn" style="width:100%;">Create Account →</button>
+                <p style="font-size:13px;color:var(--text-muted);text-align:center;margin-top:8px;">
+                    Already have an account? 
+                    <a href="login.html" style="color:var(--primary-light);">Log in →</a>
+                </p>
+                <div class="msg-box" id="msg1"></div>
+            </div>
+
+            <!-- STEP 2: Select stocks -->
+            <div class="form-step" id="step2">
+                <div class="msg-box success show">
+                    ✅ Account Created!
+                    <span class="sub">Now add your stocks below</span>
+                </div>
+                <select id="country">
+                    <option value="">Select your country</option>
+                    <option value="India">🇮🇳 India (NSE)</option>
+                    <option value="USA">🇺🇸 USA (NYSE, NASDAQ)</option>
+                    <option value="Germany">🇩🇪 Germany (DAX)</option>
+                    <option value="Australia">🇦🇺 Australia (ASX)</option>
+                </select>
+                <input type="text" id="stocksInput" placeholder="e.g. RELIANCE.NS, AAPL, TSLA">
+                <p class="input-hint">Add 1-3 stocks. NSE (.NS), NYSE, or NASDAQ supported</p>
+                <button class="btn" id="finalSubmitBtn" style="width:100%;margin-top:8px;">Complete Signup 🚀</button>
+                <div class="msg-box" id="msg2"></div>
+            </div>
+
+            <!-- STEP 3: Done -->
+            <div class="form-step" id="step3">
+                <div class="msg-box success show" style="display:block;">
+                    🎉 Welcome Aboard!
+                    <span class="sub">Your first digest arrives this Sunday morning.</span>
+                </div>
+                <a href="dashboard.html" class="btn" style="width:100%;text-align:center;margin-top:12px;">Go to Dashboard →</a>
+            </div>
+
+            <p style="font-size:12px;color:var(--text-muted);margin-top:20px;line-height:1.6;">
+                By signing up, you agree to our terms and will receive one weekly email. Unsubscribe anytime. Never financial advice.
+            </p>
+        </div>
+
+    </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+    <div class="footer-links">
+        <a href="#" style="display:flex;align-items:center;gap:8px;color:#fff;text-decoration:none;">
+            <img src="Logo_White.png" alt="" style="height:24px;">
+            <span style="font-weight:700;font-size:15px;">STOCK INSIGHTS</span>
+        </a>
+        <span style="color:#334155;">·</span>
+        <a href="https://www.linkedin.com/company/stock-insight-ai-agent/" target="_blank" class="linkedin-btn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+            LinkedIn
+        </a>
+        <span style="color:#334155;">·</span>
+        <a href="#features">Features</a>
+        <span style="color:#334155;">·</span>
+        <a href="#about">How It Works</a>
+        <span style="color:#334155;">·</span>
+        <a href="#contact">Sign Up</a>
+    </div>
+    <p>&copy; 2026 Stock Insights Intelligence Portal. Built in Pune, India.</p>
+    <p style="margin-top:10px;opacity:0.5;max-width:700px;margin-inline:auto;font-size:12px;">Educational Tool. Not Financial Advice. Past performance ≠ future results. Trading involves risk of loss.</p>
+</footer>
+
+<script src="config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPA_URL =
+  window.ENV?.SUPABASE_URL || "https://mnbmocinletzjsvmaaev.supabase.co";
+const SUPA_KEY =
+  window.ENV?.SUPABASE_KEY ||
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1uYm1vY2lubGV0empzdm1hYWV2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3MzYzNzEsImV4cCI6MjA5MTMxMjM3MX0.X_bbX8_ea3x8XkZiYQ7KOqBWBUklhf0-L5GW9Y0R6LA";
+const sb = supabase.createClient(SUPA_URL, SUPA_KEY);
+
+function showMsg(id, type, html) {
+  const el = document.getElementById(id);
+  el.className = "msg-box show " + type;
+  el.innerHTML = html;
+}
+
+function goToStep(n) {
+  [1,2,3].forEach(i => {
+    document.getElementById("step"+i).classList.remove("active");
+    const dot = document.getElementById("dot"+i);
+    if (dot) {
+      dot.classList.remove("active","done");
+      if (i < n) dot.classList.add("done");
+      if (i === n) dot.classList.add("active");
+    }
+  });
+  document.getElementById("step"+n).classList.add("active");
+  document.getElementById("contact").scrollIntoView({behavior:"smooth",block:"center"});
+}
+
+window.addEventListener("load", async () => {
+  const { data: { session } } = await sb.auth.getSession();
+  if (session) window.location.href = "dashboard.html";
+});
+
+document.getElementById("signupBtn").addEventListener("click", async () => {
+  const email = document.getElementById("emailInput").value.trim();
+  const password = document.getElementById("passwordInput").value;
+
+  if (!email || !email.includes("@")) {
+    showMsg("msg1","error","❌ Enter a valid email"); return;
+  }
+  if (!password || password.length < 6) {
+    showMsg("msg1","error","❌ Password must be at least 6 characters"); return;
+  }
+
+  document.getElementById("signupBtn").textContent = "Creating account…";
+  document.getElementById("signupBtn").disabled = true;
+
+  const { error } = await sb.auth.signUp({ email, password });
+
+  document.getElementById("signupBtn").textContent = "Create Account →";
+  document.getElementById("signupBtn").disabled = false;
+
+  if (error) {
+    if (error.message.includes("already registered")) {
+      showMsg("msg1","warn",
+        "⚠️ Email already registered. <a href='login.html' style='color:#f59e0b;'>Log in here →</a>"
+      );
+    } else {
+      showMsg("msg1","error","❌ " + error.message);
+    }
+    return;
+  }
+
+  goToStep(2);
+});
+
+document.getElementById("finalSubmitBtn").addEventListener("click", async () => {
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) {
+    showMsg("msg2","error","❌ Session lost — please refresh"); return;
+  }
+
+  const email = session.user.email;
+  const country = document.getElementById("country").value;
+  const stocks = document.getElementById("stocksInput").value
+    .split(",").map(s => s.trim().toUpperCase()).filter(Boolean);
+
+  if (!country) { showMsg("msg2","error","❌ Select your country"); return; }
+  if (!stocks.length) { showMsg("msg2","error","❌ Add at least one stock"); return; }
+  if (stocks.length > 3) {
+    showMsg("msg2","warn","⚠️ Max 3 stocks for free tier"); return;
+  }
+
+  document.getElementById("finalSubmitBtn").textContent = "Saving…";
+  document.getElementById("finalSubmitBtn").disabled = true;
+
+  const { error } = await sb.from("subscriptions").upsert(
+    [{ email, country, stocks, active: true, email_frequency: 'weekly' }],
+    { onConflict: "email" }
+  );
+
+  document.getElementById("finalSubmitBtn").textContent = "Complete Signup 🚀";
+  document.getElementById("finalSubmitBtn").disabled = false;
+
+  if (error) {
+    showMsg("msg2","error","❌ " + error.message); return;
+  }
+
+  goToStep(3);
+});
+</script>
+</body>
+</html>
